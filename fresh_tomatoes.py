@@ -77,7 +77,7 @@ main_page_head = '''
         });
         // Animate in the movies when the page loads
         $(document).ready(function () {
-          $('.movie-tile').hide().first().show("fast", function showNext() {
+          $('.movie-tile').first().show("fast", function showNext() {
             $(this).next("div").show("fast", showNext);
           });
         });
@@ -113,10 +113,10 @@ main_page_content = '''
       </div>
     </div>
     <div class="container">
-      {movie_tiles}
-    </div>
-    <div class="container">
-      {tv_show_tiles}
+        <h2>Favorite Movies</h2>
+        {movie_tiles}
+        <h2>Favorite Shows</h2>
+        {tv_show_tiles}
     </div>
   </body>
 </html>
@@ -146,9 +146,9 @@ def create_movie_tiles_content(movies):
     for movie in movies:
         # Extract the youtube ID from the url
         youtube_id_match = re.search(
-            r'(?<=v=)[^&#]+', movie.trailer_youtube_url)
+            r'(?<=v=)[^&#]+', movie.youtube_trailer_url)
         youtube_id_match = youtube_id_match or re.search(
-            r'(?<=be/)[^&#]+', movie.trailer_youtube_url)
+            r'(?<=be/)[^&#]+', movie.youtube_trailer_url)
         movie_trailer_youtube_id = (youtube_id_match.group(0) if youtube_id_match
                               else None)
 
@@ -156,9 +156,8 @@ def create_movie_tiles_content(movies):
         movies_content += movie_tile_content.format(
             movie_title=movie.title,
             poster_image_url=movie.poster_image_url,
-            movie_trailer_youtube_id=movie_trailer_youtube_id
+            movie_trailer_youtube_id=movie.youtube_trailer_url
             )
-            
     return movies_content
 
 
@@ -168,18 +167,17 @@ def create_tv_show_tiles_content(tv_shows):
     for tv_show in tv_shows:
         # Extract the youtube ID from the url
         youtube_id_match = re.search(
-            r'(?<=v=)[^&#]+', tv_show.trailer_youtube_url)
+            r'(?<=v=)[^&#]+', tv_show.youtube_trailer_url)
         youtube_id_match = youtube_id_match or re.search(
-            r'(?<=be/)[^&#]+', tv_show.trailer_youtube_url)
+            r'(?<=be/)[^&#]+', tv_show.youtube_trailer_url)
         tv_show_trailer_youtube_id = (youtube_id_match.group(0) if youtube_id_match
                               else None)
         # Append the tile for the tv show with its content filled in
-        tv_shows_content += movie_tile_content.format(
+        tv_shows_content += tv_show_tile_content.format(
             movie_title=tv_show.title,
             tv_show_image_url=tv_show.tv_show_image_url,
-            tv_show_trailer_youtube_id=tv_show_trailer_youtube_id
+            tv_show_trailer_youtube_id=tv_show.youtube_trailer_url
             )
-
     return tv_shows_content
 
 
@@ -190,7 +188,8 @@ def open_movies_page(movies, tv_shows):
     # Replace the movie tiles placeholder generated content
     rendered_content = main_page_content.format(
         movie_tiles=create_movie_tiles_content(movies),
-        tv_show_tiles=create_tv_show_tiles_content(tv_shows))
+        tv_show_tiles=create_tv_show_tiles_content(tv_shows)
+        )
 
 
     # Output the file
