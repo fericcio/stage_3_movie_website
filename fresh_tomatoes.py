@@ -156,7 +156,7 @@ def create_movie_tiles_content(movies):
         movies_content += movie_tile_content.format(
             movie_title=movie.title,
             poster_image_url=movie.poster_image_url,
-            movie_trailer_youtube_id=movie.youtube_trailer_url
+            movie_trailer_youtube_id=movie_trailer_youtube_id
             )
     return movies_content
 
@@ -176,7 +176,7 @@ def create_tv_show_tiles_content(tv_shows):
         tv_shows_content += tv_show_tile_content.format(
             movie_title=tv_show.title,
             tv_show_image_url=tv_show.tv_show_image_url,
-            tv_show_trailer_youtube_id=tv_show.youtube_trailer_url
+            tv_show_trailer_youtube_id=tv_show_trailer_youtube_id
             )
     return tv_shows_content
 
