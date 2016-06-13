@@ -1,200 +1,65 @@
-import webbrowser
-import os
-import re
+import media
+import fresh_tomatoes
 
+#movies I liked with relative data and links to trailer and poster image
 
-# Styles and scripting for the page
-main_page_head = '''
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="utf-8">
-    <title>Fresh Tomatoes!</title>
+toy_story = media.Movie("Toy Story", 
+                        "https://youtu.be/KYz2wyBy3kc",
+#                        "8.3 out of 10",
+                        "A story of a boy and his toys that come to life",
+                        "https://upload.wikimedia.org/wikipedia/en/1/13/Toy_Story.jpg")
 
-    <!-- Bootstrap 3 -->
-    <link rel="stylesheet" href="https://netdna.bootstrapcdn.com/bootstrap/3.1.0/css/bootstrap.min.css">
-    <link rel="stylesheet" href="https://netdna.bootstrapcdn.com/bootstrap/3.1.0/css/bootstrap-theme.min.css">
-    <script src="http://code.jquery.com/jquery-1.10.1.min.js"></script>
-    <script src="https://netdna.bootstrapcdn.com/bootstrap/3.1.0/js/bootstrap.min.js"></script>
-    <style type="text/css" media="screen">
-        body {
-            padding-top: 80px;
-        }
-        #trailer .modal-dialog {
-            margin-top: 200px;
-            width: 640px;
-            height: 480px;
-        }
-        .hanging-close {
-            position: absolute;
-            top: -12px;
-            right: -12px;
-            z-index: 9001;
-        }
-        #trailer-video {
-            width: 100%;
-            height: 100%;
-        }
-        .movie-tile {
-            margin-bottom: 20px;
-            padding-top: 20px;
-        }
-        .movie-tile:hover {
-            background-color: #EEE;
-            cursor: pointer;
-        }
-        .scale-media {
-            padding-bottom: 56.25%;
-            position: relative;
-        }
-        .scale-media iframe {
-            border: none;
-            height: 100%;
-            position: absolute;
-            width: 100%;
-            left: 0;
-            top: 0;
-            background-color: white;
-        }
-    </style>
-    <script type="text/javascript" charset="utf-8">
-        // Pause the video when the modal is closed
-        $(document).on('click', '.hanging-close, .modal-backdrop, .modal', function (event) {
-            // Remove the src so the player itself gets removed, as this is the only
-            // reliable way to ensure the video stops playing in IE
-            $("#trailer-video-container").empty();
-        });
-        // Start playing the video whenever the trailer modal is opened
-        $(document).on('click', '.movie-tile', function (event) {
-            var trailerYouTubeId = $(this).attr('data-trailer-youtube-id')
-            var sourceUrl = 'http://www.youtube.com/embed/' + trailerYouTubeId + '?autoplay=1&html5=1';
-            $("#trailer-video-container").empty().append($("<iframe></iframe>", {
-              'id': 'trailer-video',
-              'type': 'text-html',
-              'src': sourceUrl,
-              'frameborder': 0
-            }));
-        });
-        // Animate in the movies when the page loads
-        $(document).ready(function () {
-          $('.movie-tile').hide().first().show("fast", function showNext() {
-            $(this).next("div").show("fast", showNext);
-          });
-        });
-    </script>
-</head>
-'''
+la_haine = media.Movie("La Haine",
+                       "https://youtu.be/yk77VrkxL88",
+#                       "8.1 out of 10",
+                       "One day in the banlieue of Paris",
+                       "https://upload.wikimedia.org/wikipedia/en/3/30/Haine.jpg")
 
+no_country_for_old_men = media.Movie("No Country for Old Men",
+                                     "https://youtu.be/38A__WT3-o0",
+#                                     "8.1 out of 10",
+                                     "While hunting in the desert, Llewelyn Moss comes across the aftermath of a drug deal gone awry.",
+                                     "https://upload.wikimedia.org/wikipedia/en/8/8b/No_Country_for_Old_Men_poster.jpg")
 
-# The main page layout and title bar
-main_page_content = '''
-  <body>
-    <!-- Trailer Video Modal -->
-    <div class="modal" id="trailer">
-      <div class="modal-dialog">
-        <div class="modal-content">
-          <a href="#" class="hanging-close" data-dismiss="modal" aria-hidden="true">
-            <img src="https://lh5.ggpht.com/v4-628SilF0HtHuHdu5EzxD7WRqOrrTIDi_MhEG6_qkNtUK5Wg7KPkofp_VJoF7RS2LhxwEFCO1ICHZlc-o_=s0#w=24&h=24"/>
-          </a>
-          <div class="scale-media" id="trailer-video-container">
-          </div>
-        </div>
-      </div>
-    </div>
+there_will_be_blood = media.Movie("There Will Be Blood",
+                                  "https://youtu.be/FeSLPELpMeM",
+#                                  "8.1 out of 10",
+                                  "In 1898, Daniel Plainview, a prospector in New Mexico, mines a potentially precious ore vein from a pit mine hole.",
+                                  "https://upload.wikimedia.org/wikipedia/en/d/da/There_Will_Be_Blood_Poster.jpg")
 
-    <!-- Main Page Content -->
-    <div class="container">
-      <div class="navbar navbar-inverse navbar-fixed-top" role="navigation">
-        <div class="container">
-          <div class="navbar-header">
-            <a class="navbar-brand" href="#">Fresh Tomatoes Favorite Movie and Tv Shows</a>
-          </div>
-        </div>
-      </div>
-    </div>
-    <div class="container">
-        <h2>Favorite Movies</h2>
-        {movie_tiles}
-        <h2>Favorite Shows</h2>
-        {tv_show_tiles}
-    </div>
-  </body>
-</html>
-'''
+fargo = media.Movie("Fargo",
+                    "https://youtu.be/h2tY82z3xXU",
+#                    "8.2 out of 10",
+                    "A homespun murder story",
+                    "https://upload.wikimedia.org/wikipedia/en/a/ac/Fargo.jpg")
 
+the_blues_brothers = media.Movie("The Blues Brothers",
+                                 "https://youtu.be/A-xtJYIwfYo",
+#                                 "7.9 out of 10",
+                                 "Two men with a mission",
+                                 "https://upload.wikimedia.org/wikipedia/en/f/f5/BluesBrothers.jpg")
 
-# A single movie entry html template
-movie_tile_content = '''
-<div class="col-md-6 col-lg-4 movie-tile text-center" data-trailer-youtube-id="{movie_trailer_youtube_id}" data-toggle="modal" data-target="#trailer">
-    <img src="{poster_image_url}" width="220" height="342">
-    <h2>{movie_title}</h2>
-</div>
-'''
-#A single tv show entry in html temolate
-tv_show_tile_content = '''
-<div class="col-md-6 col-lg-4 movie-tile text-center" data-trailer-youtube-id="{tv_show_trailer_youtube_id}" data-toggle="modal" data-target="#trailer">
-    <img src="{tv_show_image_url}" width="220" height="342">
-    <h2>{movie_title}</h2>
-</div>
-'''
+#list of movies for html document
 
-def create_movie_tiles_content(movies):
-    # The HTML content for this section of the page
-    movies_content = ''
-    for movie in movies:
-        # Extract the youtube ID from the url
-        youtube_id_match = re.search(
-            r'(?<=v=)[^&#]+', movie.youtube_trailer_url)
-        youtube_id_match = youtube_id_match or re.search(
-            r'(?<=be/)[^&#]+', movie.youtube_trailer_url)
-        movie_trailer_youtube_id = (youtube_id_match.group(0) if youtube_id_match
-                              else None)
+movies = [toy_story, la_haine, no_country_for_old_men, there_will_be_blood, fargo, the_blues_brothers]
 
-        # Append the tile for the movie with its content filled in
-        movies_content += movie_tile_content.format(
-            movie_title=movie.title,
-            poster_image_url=movie.poster_image_url,
-            movie_trailer_youtube_id=movie.youtube_trailer_url
-            )
-    return movies_content
+#tv shows I liked with relative data and links to image
 
+breaking_bed = media.Tv_show("Breadking Bad",
+                             "https://youtu.be/8h-iAZBtNrs",
+#                             "9.5 out ot 10",
+                             "https://upload.wikimedia.org/wikipedia/en/6/61/Breaking_Bad_title_card.png")
+#                             "Five seasons",
+#                             "AMC")
 
-def create_tv_show_tiles_content(tv_shows):
-    # The HTML content for this section of the page
-    tv_shows_content = ''
-    for tv_show in tv_shows:
-        # Extract the youtube ID from the url
-        youtube_id_match = re.search(
-            r'(?<=v=)[^&#]+', tv_show.youtube_trailer_url)
-        youtube_id_match = youtube_id_match or re.search(
-            r'(?<=be/)[^&#]+', tv_show.youtube_trailer_url)
-        tv_show_trailer_youtube_id = (youtube_id_match.group(0) if youtube_id_match
-                              else None)
+house_of_cards = media.Tv_show("House of Cards",
+                               "https://youtu.be/ULwUzF1q5w4",
+#                               "9.0 out of 10",
+                               "https://upload.wikimedia.org/wikipedia/en/3/3f/House_of_Cards_title_card.png")
+#                               "Four seasons aired. Fifth season announced for 2017",
+#                               "Netflix")
 
-        # Append the tile for the tv show with its content filled in
-        tv_shows_content += tv_show_tile_content.format(
-            movie_title=tv_show.title,
-            tv_show_image_url=tv_show.tv_show_image_url,
-            tv_show_trailer_youtube_id=tv_show.youtube_trailer_url
-            )
-    return tv_shows_content
+#list of tv shows for html document
+tv_shows = [breaking_bed, house_of_cards]
 
-
-def open_movies_page(movies, tv_shows):
-    # Create or overwrite the output file
-    output_file = open('fresh_tomatoes.html', 'w')
-
-    # Replace the movie tiles placeholder generated content
-    rendered_content = main_page_content.format(
-        movie_tiles=create_movie_tiles_content(movies),
-        tv_show_tiles=create_tv_show_tiles_content(tv_shows)
-        )
-
-
-    # Output the file
-    output_file.write(main_page_head + rendered_content)
-    output_file.close()
-
-    # open the output file in the browser (in a new tab, if possible)
-    url = os.path.abspath(output_file.name)
-    webbrowser.open('file://' + url, new=2)
+fresh_tomatoes.open_movies_page(movies, tv_shows)
